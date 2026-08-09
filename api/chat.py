@@ -47,7 +47,7 @@ class handler(BaseHTTPRequestHandler):
             
             # 3. Llamar al modelo con la NUEVA sintaxis
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model='gemini-2.5-flash',
                 contents=last_user_message,
                 config=types.GenerateContentConfig(
                     system_instruction=MEGA_PROMPT,
