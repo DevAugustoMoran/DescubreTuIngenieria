@@ -1,10 +1,8 @@
 import json
 import os
 from http.server import BaseHTTPRequestHandler
-import google.generativeai as genai
-
-# Vercel inyectará tu API Key de forma segura desde las variables de entorno
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+from google import genai
+from google.genai import types
 
 # El "Mega-Prompt" con el contexto de la universidad. El usuario nunca verá esto.
 MEGA_PROMPT = """Eres el Asesor Virtual oficial de Universidad Galileo. 
@@ -44,14 +42,17 @@ class handler(BaseHTTPRequestHandler):
             # Obtener solo el último mensaje del usuario para enviarlo a la IA
             last_user_message = user_messages[-1]['content'] if user_messages else ""
             
-            # 2. Configurar el modelo de Gemini con tu Mega-Prompt como instrucción de sistema
-            model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
-                system_instruction=MEGA_PROMPT
-            )
+            # 2. Inicializar el NUEVO cliente de Gemini (toma la API key del entorno)
+            client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
             
-            # 3. Generar la respuesta
-            response = model.generate_content(last_user_message)
+            # 3. Llamar al modelo con la NUEVA sintaxis
+            response = client.models.generate_content(
+                model='gemini-1.5-flash',
+                contents=last_user_message,
+                config=types.GenerateContentConfig(
+                    system_instruction=MEGA_PROMPT,
+                )
+            )
             
             # 4. Enviar la respuesta de vuelta a React en formato JSON
             self.send_response(200)
