@@ -676,10 +676,6 @@ const GlobalStyles = () => (
 
     .gal-discover-scroller { flex: 1; height: 460px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: thin; }
     
-    /* SCROLLBAR SECCIÓN CARRERAS */
-    .gal-discover-scroller::-webkit-scrollbar { width: 4px; }
-    .gal-discover-scroller::-webkit-scrollbar-thumb { background: rgba(232,201,120,0.2); border-radius: 10px; }
-    
     .gal-discover-section {
       min-height: 460px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
       padding: 40px 44px 40px 10px; position: relative; opacity: 0.25; transform: translateY(14px) scale(0.985);
@@ -714,10 +710,6 @@ const GlobalStyles = () => (
       background: var(--white); border: 1px solid #E4E1D6; border-radius: 14px; height: 360px;
       overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;
     }
-    
-    /* SCROLLBAR CHAT CLARO */
-    .gal-chat-window::-webkit-scrollbar { width: 6px; }
-    .gal-chat-window::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
     
     .gal-msg { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; }
     .gal-msg.user { align-self: flex-end; background: var(--ink); color: var(--white); border-bottom-right-radius: 3px; }

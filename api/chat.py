@@ -103,7 +103,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
-    # Maneja la petición real del chat
+# Maneja la petición real del chat
     def do_POST(self):
         try:
             # 1. Leer los datos enviados por React
@@ -111,24 +111,37 @@ class handler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             req_body = json.loads(post_data)
             
-            user_messages = req_body.get("messages", [])
+            mensajes_frontend = req_body.get("messages", [])
             
-            # Obtener solo el último mensaje del usuario para enviarlo a la IA
-            last_user_message = user_messages[-1]['content'] if user_messages else ""
+            # --- AQUÍ ESTÁ LA MAGIA PARA LA MEMORIA ---
+            gemini_history = []
+            for msg in mensajes_frontend:
+                # React nos envía "user" o "bot". Gemini necesita "user" o "model"
+                role = "user" if msg.get("role") == "user" else "model"
+                
+                # Extraemos el texto que viene en la propiedad "content"
+                texto = msg.get("content", "")
+                
+                if texto.strip(): # Solo lo agregamos si tiene texto
+                    gemini_history.append({
+                        "role": role,
+                        "parts": [{"text": texto}]
+                    })
             
             # 2. Inicializar el NUEVO cliente de Gemini (toma la API key del entorno)
             client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
             
-            # 3. Llamar al modelo con la NUEVA sintaxis
+            # 3. Llamar al modelo pasándole el HISTORIAL COMPLETO
             response = client.models.generate_content(
-                model='gemini-3.1-flash-lite',
-                contents=last_user_message,
+                model='gemini-3.1-flash-lite', # Asegúrate de usar un modelo que exista
+                contents=gemini_history,  # <--- Pasamos toda la lista, no solo el último
                 config=types.GenerateContentConfig(
                     system_instruction=MEGA_PROMPT,
                 )
             )
             
             # 4. Enviar la respuesta de vuelta a React en formato JSON
+            # (Mantén el resto de tu código igual a partir de aquí...)
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
