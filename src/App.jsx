@@ -323,27 +323,21 @@ const GlobalStyles = () => (
     .gal-logo-img-wrapper {
       display: flex;
       align-items: center;
-      justify-content: center;
-      /* Agregamos una sutil línea vertical divisoria */
       padding-right: 16px;
-      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      /* Línea divisoria elegante */
+      border-right: 1px solid rgba(255, 255, 255, 0.15); 
     }
     
     .gal-logo-img {
-      height: 38px; /* Un poco más grande para que luzca el detalle */
+      height: 42px; /* Ajusta este valor si la quieres más grande o pequeña */
       width: auto;
       display: block;
-      /* EL TRUCO CSS: 
-         1. Invert(1) pasa el texto negro a blanco (y la cara a azul)
-         2. Hue-rotate(180deg) devuelve la cara azul a su tono dorado
-         3. Brightness(1.1) le da un ligero brillo extra */
-      filter: invert(1) hue-rotate(180deg) brightness(1.1);
     }
     
     .gal-logo-text { 
       font-family: 'Fraunces', serif; 
       font-size: 16px; 
-      color: rgba(255, 255, 255, 0.9); /* Texto en blanco suave */
+      color: rgba(255, 255, 255, 0.9); 
       font-weight: 500; 
       letter-spacing: 0.02em; 
     }
