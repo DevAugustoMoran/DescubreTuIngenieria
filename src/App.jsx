@@ -576,17 +576,25 @@ function OrbitHeader({ stage }) {
   ];
 
   return (
-    // 1. Todo debe estar envuelto en un contenedor padre (ej. un div o fragmento <>)
-    <div>
-      {/* 2. El texto debe estar dentro de una etiqueta */}
-      <h2>Descubre tu ingeniería</h2>
-
-      {stops.map((s) => (
-        // 3. Debes retornar un elemento JSX válido dentro del map y usar un "key"
-        <div key={s.id} className={s.id === stage ? "done" : ""}>
-          {s.label}
+    <div className="gal-header">
+      <div className="gal-logo">
+        <div className="gal-logo-img-wrapper">
+          <img src="/logo-galileo.png" alt="Universidad Galileo" className="gal-logo-img" />
         </div>
-      ))}
+        <div className="gal-logo-text">Descubre tu ingeniería</div>
+      </div>
+      
+      <div className="gal-orbit">
+        <div className="gal-orbit-track">
+          <div className="gal-orbit-line" />
+          {stops.map((s) => (
+            <div key={s.id} className={"gal-orbit-stop " + (stage === s.id ? "active" : stage > s.id ? "done" : "")}>
+              <div className="gal-orbit-ring"><div className="gal-orbit-dot" /></div>
+              <div className="gal-orbit-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
