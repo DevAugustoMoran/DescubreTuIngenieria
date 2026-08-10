@@ -1,4 +1,4 @@
-import { Code2, Bot, BarChart3, Building2, Network, Cpu, Briefcase, FlaskConical, Zap, useState, useRef, useEffect } from "react";
+import {Network, Cpu, Briefcase, FlaskConical, Zap, useState, useRef, useEffect } from "react";
 import {
   Code2,
   Bot,
