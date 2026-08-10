@@ -450,6 +450,23 @@ const GENERAL_QUESTIONS = [
   "¿Cuál ingeniería me recomiendas?",
   "¿Cómo es el proceso de admisión?",
 ];
+
+/* ------------------------------------------------------------------ */
+/*  UTILIDADES                                                        */
+/* ------------------------------------------------------------------ */
+
+// Pega esto aquí:
+const formatBoldText = (text) => {
+  if (!text) return "";
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} style={{ color: "var(--gold-light)" }}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 /* ------------------------------------------------------------------ */
 /*  STYLES                                                            */
 /* ------------------------------------------------------------------ */
@@ -474,7 +491,7 @@ const GlobalStyles = () => (
       height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: transparent; /* Fondo transparente */
+      background: #0F172A; /* CAMBIO: Fondo azul oscuro en vez de transparent */
     }
     ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.15); /* Gris sutil semi-transparente */
@@ -951,7 +968,7 @@ function DiscoverStage({ onPick, onSkipToChat }) {
           </div>
           <div className="gal-chat-window" ref={chat.chatRef}>
             {chat.messages.map((m, i) => (
-              <div key={i} className={`gal-msg ${m.role}`}>{m.text}</div>
+              <div key={i} className={`gal-msg ${m.role}`}>{formatBoldText(m.text)}</div>
             ))}
             {chat.loading && (
               <div className="gal-msg bot typing">
@@ -959,11 +976,15 @@ function DiscoverStage({ onPick, onSkipToChat }) {
               </div>
             )}
           </div>
-          <div className="gal-inline-chat-chips">
-            {GENERAL_QUESTIONS.map((q, i) => (
-              <button key={i} className="gal-chip" onClick={() => chat.send(q)} disabled={chat.loading}>{q}</button>
-            ))}
-          </div>
+          
+          {chat.messages.length === 1 && (
+            <div className="gal-inline-chat-chips">
+              {GENERAL_QUESTIONS.map((q, i) => (
+                <button key={i} className="gal-chip" onClick={() => chat.send(q)} disabled={chat.loading}>{q}</button>
+              ))}
+            </div>
+          )}
+
           <div className="gal-inline-chat-foot">
             <input
               placeholder="Escribe tu duda aquí..."
@@ -1131,6 +1152,10 @@ function ChallengeResult({ career, score, total, onGoToChat }) {
 /*  STAGE 3: PREGUNTAR (Career Chat)                                  */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/*  STAGE 3: PREGUNTAR (Career Chat)                                  */
+/* ------------------------------------------------------------------ */
+
 function ChatStage({ career, onContinue, onBackToDiscover }) {
   const systemPrompt = `Eres un asesor vocacional de Universidad Galileo, especializado en ${career.name}. Responde dudas de forma clara, amigable y muy breve (máximo 3-4 líneas).`;
   const chat = useClaudeChat(systemPrompt, `¡Hola! Soy experto en ${career.short}. Pregúntame lo que de verdad te preocupa sobre esta carrera — sin filtros.`);
@@ -1148,17 +1173,21 @@ function ChatStage({ career, onContinue, onBackToDiscover }) {
       <p className="gal-sub">Sin formularios, sin espera. Respuestas directas sobre {career.short}.</p>
 
       <div className="gal-chat-window" ref={chat.chatRef}>
-        {chat.messages.map((m, i) => (<div key={i} className={`gal-msg ${m.role}`}>{m.text}</div>))}
+        {chat.messages.map((m, i) => (
+          <div key={i} className={`gal-msg ${m.role}`}>{formatBoldText(m.text)}</div>
+        ))}
         {chat.loading && (
           <div className="gal-msg bot typing"><span className="gal-typing-dot" /><span className="gal-typing-dot" /><span className="gal-typing-dot" /></div>
         )}
       </div>
 
-      <div className="gal-chips">
-        {SUGGESTED_QUESTIONS.map((q, i) => (
-          <button key={i} className="gal-chip" onClick={() => chat.send(q)} disabled={chat.loading}>{q}</button>
-        ))}
-      </div>
+      {chat.messages.length === 1 && (
+        <div className="gal-chips">
+          {SUGGESTED_QUESTIONS.map((q, i) => (
+            <button key={i} className="gal-chip" onClick={() => chat.send(q)} disabled={chat.loading}>{q}</button>
+          ))}
+        </div>
+      )}
 
       <div className="gal-input-row">
         <input
