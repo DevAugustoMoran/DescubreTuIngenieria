@@ -1,4 +1,4 @@
-import {Network, Cpu, Briefcase, FlaskConical, Zap, useState, useRef, useEffect } from "react";
+import {useState, useRef, useEffect } from "react";
 import {
   Code2,
   Bot,
@@ -15,7 +15,8 @@ import {
   ChevronDown,
   Quote,
   Compass,
-  Sparkles
+  Sparkles,
+  Network, Cpu, Briefcase, FlaskConical, Zap
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
