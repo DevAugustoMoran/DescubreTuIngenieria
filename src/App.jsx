@@ -435,7 +435,7 @@ const CAREERS = [
       shortLine: "“La transición energética es el reto más grande de nuestra generación.”",
       quote: "Diseñar sistemas que alimenten ciudades sin destruir el planeta es el trabajo con más propósito que puedes tener.",
     },
-  }
+  },
 ];
 
 const SUGGESTED_QUESTIONS = [
