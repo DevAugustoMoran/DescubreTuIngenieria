@@ -252,41 +252,48 @@ const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    /* Reseteo para asegurar que el fondo cubra absolutamente toda la pantalla sin bordes blancos */
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #0B1526; /* var(--ink) */
+    /* Reseteo agresivo para anular los límites de Vite */
+    html, body, #root {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100%;
+      max-width: none !important;
+      background-color: #0F172A; /* NUEVO AZUL BASE */
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Animación diagonal: de inferior-derecha a superior-izquierda */
-    @keyframes slideStickers {
-      0% { background-position: 0 0; }
-      100% { background-position: -260px -260px; }
+    /* --- ESTILIZACIÓN DE LA BARRA DE DESPLAZAMIENTO (SCROLLBAR) --- */
+    ::-webkit-scrollbar {
+      width: 8px; /* Más delgada */
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent; /* Fondo transparente */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15); /* Gris sutil semi-transparente */
+      border-radius: 10px; /* Bordes redondeados */
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25); /* Un poco más claro al pasar el mouse */
     }
 
     .gal-root {
-      --ink: #0B1526;
-      --ink-2: #16223D;
-      --ink-3: #223257;
+      --ink: #0F172A; /* NUEVO AZUL BASE */
+      --ink-2: #1E293B; /* Ligeramente más claro para contrastes */
+      --ink-3: #334155;
       --gold: #C89B3C;
       --gold-light: #E8C978;
       --paper: #F1F2EC;
       --paper-2: #FBFAF6;
       --white: #FFFFFF;
-      --muted: #8891A6;
+      --muted: #94A3B8;
       --good: #4C9A6A;
       --bad: #C0574A;
       font-family: 'Inter', sans-serif;
       
-      /* --- Fondo original oscuro con stickers negros sutiles --- */
-      background-color: #070D18; 
-      background-image: url("data:image/svg+xml,%3Csvg width='1080' height='1080' viewBox='0 0 1080 1080' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='rgba(0,0,0,0.75)' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- Database --%3E%3Cg transform='translate(150, 150) scale(3.8)'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'/%3E%3Cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'/%3E%3Cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'/%3E%3C/g%3E%3C!-- Code Brackets --%3E%3Cg transform='translate(720, 210) scale(3.8)'%3E%3Cpolyline points='16 18 22 12 16 6'/%3E%3Cpolyline points='8 6 2 12 8 18'/%3E%3C/g%3E%3C!-- Gear --%3E%3Cg transform='translate(240, 690) scale(3.8)'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'/%3E%3C/g%3E%3C!-- Server Container --%3E%3Cg transform='translate(690, 720) scale(3.8)'%3E%3Crect x='2' y='2' width='20' height='8' rx='2' ry='2'/%3E%3Crect x='2' y='14' width='20' height='8' rx='2' ry='2'/%3E%3Cline x1='6' y1='6' x2='6.01' y2='6'/%3E%3Cline x1='6' y1='18' x2='6.01' y2='18'/%3E%3C/g%3E%3C/svg%3E");
+      background-color: var(--ink); /* Fondo uniforme */
       
-      background-size: 1080px 1080px; /* Tamaño triplicado */
-      animation: slideStickers 45s linear infinite; /* Animación más pausada acorde al tamaño */
-
       color: var(--white);
       min-height: 100vh;
       width: 100%;
@@ -299,37 +306,36 @@ const GlobalStyles = () => (
     .gal-display { font-family: 'Fraunces', serif; }
 
     .gal-shell { 
-      /* --- En PC, el contenedor tapa los stickers del centro --- */
-      background-color: var(--ink); 
+      background-color: var(--ink); /* Fondo uniforme */
       max-width: 960px; 
       margin: 0 auto; 
       padding: 28px 20px 60px; 
       position: relative; 
       min-height: 100vh;
-      box-shadow: 0 0 40px rgba(0,0,0,0.5); 
-    }
-
-    /* --- REGLA MÓVIL: En pantallas estrechas, el contenedor se vuelve transparente para mostrar los stickers --- */
-    @media (max-width: 768px) {
-      .gal-shell {
-        background-color: transparent;
-        box-shadow: none;
-      }
+      /* Eliminada la sombra (box-shadow) para unificar el fondo */
     }
 
     /* ---------- Orbit header ---------- */
     .gal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px; flex-wrap: wrap; gap: 16px; }
-    .gal-logo { display: flex; align-items: center; gap: 10px; }
-    .gal-logo-mark {
-      width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--gold);
-      display: flex; align-items: center; justify-content: center; position: relative;
+    .gal-logo { display: flex; align-items: center; gap: 14px; }
+
+    /* Contenedor blanco para contrastar el texto negro del logo */
+    .gal-logo-img-wrapper {
+      background: var(--paper-2); 
+      padding: 6px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    .gal-logo-mark::after {
-      content: ''; position: absolute; width: 6px; height: 6px; border-radius: 50%;
-      background: var(--gold); top: 3px; right: 4px;
+    .gal-logo-img {
+      height: 32px; 
+      width: auto;
+      display: block;
     }
-    .gal-logo-text { font-family: 'Fraunces', serif; font-size: 17px; letter-spacing: 0.02em; }
-    .gal-logo-text b { color: var(--gold-light); font-weight: 600; }
+
+    .gal-logo-text { font-family: 'Fraunces', serif; font-size: 16px; color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
 
     .gal-orbit { display: flex; align-items: center; gap: 4px; position: relative; }
     .gal-orbit-track { position: relative; display: flex; align-items: center; gap: 26px; padding: 10px 6px; }
@@ -381,8 +387,7 @@ const GlobalStyles = () => (
 
     /* ---------- Discover Panel (Integrated Chat) ---------- */
     .gal-discover-panel {
-      background: rgba(11, 21, 38, 0.95);
-      backdrop-filter: blur(8px);
+      background: var(--ink-2); /* Contenedor oscuro */
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 20px; overflow: hidden; position: relative;
       display: flex; flex-direction: column; gap: 20px;
@@ -391,7 +396,7 @@ const GlobalStyles = () => (
     @media (max-width: 768px) { .gal-discover-header-grid { grid-template-columns: 1fr; gap: 20px; padding: 24px 24px 0; } }
     
     .gal-inline-chat {
-      background: var(--ink-2); border: 1px solid var(--ink-3); border-radius: 16px;
+      background: var(--ink); border: 1px solid var(--ink-3); border-radius: 16px;
       display: flex; flex-direction: column; 
       height: 520px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.25);
@@ -401,8 +406,13 @@ const GlobalStyles = () => (
       font-size: 13px; font-weight: 600; color: var(--gold-light); background: rgba(0,0,0,0.1); border-radius: 16px 16px 0 0;
     }
     .gal-inline-chat .gal-chat-window { height: auto; flex: 1; background: transparent; border: none; padding: 16px; margin: 0; overflow-y: auto; }
+    
+    /* SCROLLBAR CHAT */
+    .gal-inline-chat .gal-chat-window::-webkit-scrollbar { width: 6px; }
+    .gal-inline-chat .gal-chat-window::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    
     .gal-inline-chat .gal-msg { font-size: 13.5px; }
-    .gal-inline-chat .gal-msg.bot { background: var(--ink-3); color: var(--white); }
+    .gal-inline-chat .gal-msg.bot { background: var(--ink-2); color: var(--white); }
     .gal-inline-chat .gal-msg.user { background: var(--gold); color: var(--ink); }
     
     /* Dark Mode Chips for Inline Chat */
@@ -415,7 +425,7 @@ const GlobalStyles = () => (
     
     .gal-inline-chat-foot { padding: 12px 16px 16px; display: flex; gap: 8px; }
     .gal-inline-chat-foot input {
-      flex: 1; background: var(--ink); border: 1px solid var(--ink-3); color: var(--white);
+      flex: 1; background: var(--ink-2); border: 1px solid var(--ink-3); color: var(--white);
       border-radius: 10px; padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; outline: none;
     }
     .gal-inline-chat-foot input:focus { border-color: var(--gold); }
@@ -438,6 +448,11 @@ const GlobalStyles = () => (
     .gal-rail-line { width: 1px; flex: 1; background: rgba(232,201,120,0.15); }
 
     .gal-discover-scroller { flex: 1; height: 460px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: thin; }
+    
+    /* SCROLLBAR SECCIÓN CARRERAS */
+    .gal-discover-scroller::-webkit-scrollbar { width: 4px; }
+    .gal-discover-scroller::-webkit-scrollbar-thumb { background: rgba(232,201,120,0.2); border-radius: 10px; }
+    
     .gal-discover-section {
       min-height: 460px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
       padding: 40px 44px 40px 10px; position: relative; opacity: 0.25; transform: translateY(14px) scale(0.985);
@@ -472,6 +487,11 @@ const GlobalStyles = () => (
       background: var(--white); border: 1px solid #E4E1D6; border-radius: 14px; height: 360px;
       overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;
     }
+    
+    /* SCROLLBAR CHAT CLARO */
+    .gal-chat-window::-webkit-scrollbar { width: 6px; }
+    .gal-chat-window::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+    
     .gal-msg { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; }
     .gal-msg.user { align-self: flex-end; background: var(--ink); color: var(--white); border-bottom-right-radius: 3px; }
     .gal-msg.bot { align-self: flex-start; background: var(--paper); color: var(--ink); border-bottom-left-radius: 3px; }
@@ -554,23 +574,19 @@ function OrbitHeader({ stage }) {
     { id: 3, label: "Preguntar" },
     { id: 4, label: "Prepararte" },
   ];
+
   return (
-    <div className="gal-header">
-      <div className="gal-logo">
-        <div className="gal-logo-mark" />
-        <div className="gal-logo-text"><b>Galileo</b> · Orientador IA</div>
-      </div>
-      <div className="gal-orbit">
-        <div className="gal-orbit-track">
-          <div className="gal-orbit-line" />
-          {stops.map((s) => (
-            <div key={s.id} className={"gal-orbit-stop " + (stage === s.id ? "active" : stage > s.id ? "done" : "")}>
-              <div className="gal-orbit-ring"><div className="gal-orbit-dot" /></div>
-              <div className="gal-orbit-label">{s.label}</div>
-            </div>
-          ))}
+    // 1. Todo debe estar envuelto en un contenedor padre (ej. un div o fragmento <>)
+    <div>
+      {/* 2. El texto debe estar dentro de una etiqueta */}
+      <h2>Descubre tu ingeniería</h2>
+
+      {stops.map((s) => (
+        // 3. Debes retornar un elemento JSX válido dentro del map y usar un "key"
+        <div key={s.id} className={s.id === stage ? "done" : ""}>
+          {s.label}
         </div>
-      </div>
+      ))}
     </div>
   );
 }
