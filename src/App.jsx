@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { Code2, Bot, BarChart3, Building2, Network, Cpu, Briefcase, FlaskConical, Zap, useState, useRef, useEffect } from "react";
 import {
   Code2,
   Bot,
@@ -231,6 +231,211 @@ const CAREERS = [
       quote: "Cada semestre les recuerdo lo mismo: esa responsabilidad —que algo real dependa de tu cálculo— hace especial esta carrera.",
     },
   },
+  {
+    id: "telecomunicaciones",
+    name: "Ingeniería en Telecomunicaciones y Redes Teleinformáticas",
+    short: "Telecomunicaciones",
+    icon: Network,
+    tag: "Conectas al mundo",
+    blurb: "Diseñas, implementas y administras las redes que permiten la comunicación global, desde fibra óptica hasta tecnologías inalámbricas.",
+    challenge: {
+      title: "Encuentra la falla de red",
+      subtitle: "Un ingeniero en telecomunicaciones asegura que la información siempre llegue.",
+      steps: [
+        {
+          type: "choice",
+          prompt: "El internet de toda una empresa falla a la misma hora todos los días. ¿Qué revisas primero?",
+          options: [
+            { label: "Cambiar los cables de todas las computadoras.", correct: false },
+            { label: "Revisar los registros (logs) del router principal a esa hora específica.", correct: true },
+            { label: "Reiniciar el módem repetidamente.", correct: false },
+          ],
+          explanation: "Identificar patrones en el tráfico y los registros del equipo central es el primer paso para diagnosticar cuellos de botella.",
+        },
+      ],
+    },
+    system: {
+      duracion: "9 semestres aprox.",
+      materias: "Redes de datos, telecomunicaciones, fibra óptica, ciberseguridad",
+      salidas: "Arquitectura de redes, gestión de infraestructura, seguridad informática",
+    },
+    roadmap: [
+      "Aprende cómo funcionan las direcciones IP",
+      "Investiga la diferencia entre Wi-Fi y redes móviles (4G/5G)",
+    ],
+    professor: {
+      name: "Ing. Carlos Mendoza",
+      role: "Catedrático de Infraestructura",
+      initials: "CM",
+      highlight: "Consultor en redes corporativas.",
+      shortLine: "“Sin redes, la tecnología moderna simplemente no existe.”",
+      quote: "Conectar puntos aislados y permitir que se comuniquen al instante es un reto fascinante.",
+    },
+  },
+  {
+    id: "electronica",
+    name: "Ingeniería en Electrónica",
+    short: "Electrónica",
+    icon: Cpu,
+    tag: "El cerebro del hardware",
+    blurb: "Diseñas los circuitos, microcontroladores y sistemas que dan vida a cualquier dispositivo tecnológico moderno.",
+    challenge: {
+      title: "Optimiza el circuito",
+      subtitle: "La electrónica requiere precisión y eficiencia energética.",
+      steps: [
+        {
+          type: "choice",
+          prompt: "Estás diseñando un dispositivo portátil y la batería se agota muy rápido. ¿Cuál es el mejor enfoque inicial?",
+          options: [
+            { label: "Ponerle una batería gigantesca y pesada.", correct: false },
+            { label: "Revisar el circuito para componentes que consuman energía cuando están inactivos.", correct: true },
+            { label: "Quitarle funciones útiles al dispositivo.", correct: false },
+          ],
+          explanation: "La eficiencia comienza en el diseño del circuito. Un buen ingeniero optimiza el consumo antes de aumentar la capacidad de la batería.",
+        },
+      ],
+    },
+    system: {
+      duracion: "9 semestres aprox.",
+      materias: "Circuitos digitales, microprocesadores, señales y sistemas, instrumentación",
+      salidas: "Diseño de hardware, telecomunicaciones, automatización, IoT",
+    },
+    roadmap: [
+      "Aprende la ley de Ohm básica",
+      "Experimenta con simuladores de circuitos en línea",
+    ],
+    professor: {
+      name: "Inga. Lucía Barrios",
+      role: "Catedrática de Sistemas Integrados",
+      initials: "LB",
+      highlight: "Diseñadora de hardware IoT.",
+      shortLine: "“Todo el software del mundo necesita hardware donde ejecutarse.”",
+      quote: "Entender a nivel eléctrico cómo se procesa la información cambia tu forma de ver cualquier dispositivo.",
+    },
+  },
+  {
+    id: "administrativa",
+    name: "Ingeniería Administrativa",
+    short: "Administrativa",
+    icon: Briefcase,
+    tag: "Liderazgo y tecnología",
+    blurb: "Combinas el pensamiento lógico y técnico con habilidades de gestión, finanzas y dirección estratégica corporativa.",
+    challenge: {
+      title: "Decisión corporativa",
+      subtitle: "Un ingeniero administrativo evalúa datos técnicos para decisiones de negocio.",
+      steps: [
+        {
+          type: "choice",
+          prompt: "Una fábrica quiere comprar maquinaria nueva. ¿Qué debes analizar antes de aprobar la compra?",
+          options: [
+            { label: "Comprar la más barata inmediatamente.", correct: false },
+            { label: "El retorno de inversión (ROI), costos de mantenimiento y aumento proyectado en producción.", correct: true },
+            { label: "El color de las máquinas.", correct: false },
+          ],
+          explanation: "Las decisiones empresariales deben estar fundamentadas en modelos matemáticos y proyecciones financieras claras.",
+        },
+      ],
+    },
+    system: {
+      duracion: "9 semestres aprox.",
+      materias: "Finanzas corporativas, gestión de proyectos, economía, planeación estratégica",
+      salidas: "Dirección general, consultoría de negocios, gestión de proyectos tecnológicos",
+    },
+    roadmap: [
+      "Familiarízate con conceptos de economía básica",
+      "Analiza casos de éxito de empresas tecnológicas",
+    ],
+    professor: {
+      name: "Ing. Roberto Valdez",
+      role: "Catedrático de Estrategia",
+      initials: "RV",
+      highlight: "Director de operaciones en retail multinacional.",
+      shortLine: "“Traducimos la complejidad técnica en valor para el negocio.”",
+      quote: "Las mejores empresas son lideradas por quienes entienden tanto los números financieros como la base tecnológica.",
+    },
+  },
+  {
+    id: "quimica",
+    name: "Ingeniería Química",
+    short: "Química",
+    icon: FlaskConical,
+    tag: "Transformas la materia",
+    blurb: "Diseñas y operas procesos industriales para transformar materias primas en productos útiles a gran escala.",
+    challenge: {
+      title: "Escala el proceso",
+      subtitle: "El ingeniero químico lleva los descubrimientos del laboratorio a la industria.",
+      steps: [
+        {
+          type: "choice",
+          prompt: "Un nuevo jabón funciona perfecto en el laboratorio (1 litro). Para producir 10,000 litros diarios, ¿qué es lo más crítico?",
+          options: [
+            { label: "Usar simplemente ollas más grandes.", correct: false },
+            { label: "Diseñar reactores considerando la transferencia de calor y fluidos a esa escala.", correct: true },
+            { label: "Contratar a más personas para que hagan litros individuales.", correct: false },
+          ],
+          explanation: "Las reacciones cambian drásticamente al escalar. Controlar presiones y temperaturas en grandes volúmenes es la esencia de la ingeniería química.",
+        },
+      ],
+    },
+    system: {
+      duracion: "9 semestres aprox.",
+      materias: "Termodinámica, fenómenos de transporte, diseño de reactores, química industrial",
+      salidas: "Industria alimentaria, farmacéutica, petroquímica, medio ambiente",
+    },
+    roadmap: [
+      "Repasa conceptos básicos de termodinámica",
+      "Investiga cómo se fabrica un producto cotidiano (como el papel o el plástico)",
+    ],
+    professor: {
+      name: "Inga. Sofía Montenegro",
+      role: "Catedrática de Procesos Industriales",
+      initials: "SM",
+      highlight: "Investigadora en biopolímeros.",
+      shortLine: "“No somos químicos de laboratorio; somos diseñadores de industrias.”",
+      quote: "La magia ocurre cuando descubres que puedes diseñar una planta entera basándote en unas cuantas ecuaciones de balance de masa.",
+    },
+  },
+  {
+    id: "energeticos",
+    name: "Ingeniería en Sistemas Energéticos",
+    short: "Sistemas Energéticos",
+    icon: Zap,
+    tag: "Impulsas el futuro sostenible",
+    blurb: "Desarrollas y gestionas soluciones para la generación, distribución y uso eficiente de la energía, enfocándote en renovables.",
+    challenge: {
+      title: "Balancea la red",
+      subtitle: "La energía debe consumirse en el momento en que se genera.",
+      steps: [
+        {
+          type: "choice",
+          prompt: "Tienes un parque solar, pero la ciudad necesita más energía durante la noche. ¿Cuál es una solución eficiente?",
+          options: [
+            { label: "Poner focos grandes apuntando a los paneles solares.", correct: false },
+            { label: "Implementar sistemas de almacenamiento (baterías a gran escala) o plantas de respaldo.", correct: true },
+            { label: "Cortar la electricidad a la mitad de la ciudad.", correct: false },
+          ],
+          explanation: "El principal reto de las energías renovables es su intermitencia. El almacenamiento e integración de redes es clave.",
+        },
+      ],
+    },
+    system: {
+      duracion: "9 semestres aprox.",
+      materias: "Energías renovables, auditoría energética, termodinámica avanzada, mercados eléctricos",
+      salidas: "Gestión de proyectos renovables, eficiencia energética, plantas de generación",
+    },
+    roadmap: [
+      "Investiga los diferentes tipos de energías renovables",
+      "Lee sobre el impacto ambiental del consumo eléctrico",
+    ],
+    professor: {
+      name: "Ing. Martín Fuentes",
+      role: "Catedrático de Energías Renovables",
+      initials: "MF",
+      highlight: "Consultor en proyectos eólicos y solares.",
+      shortLine: "“La transición energética es el reto más grande de nuestra generación.”",
+      quote: "Diseñar sistemas que alimenten ciudades sin destruir el planeta es el trabajo con más propósito que puedes tener.",
+    },
+  }
 ];
 
 const SUGGESTED_QUESTIONS = [
