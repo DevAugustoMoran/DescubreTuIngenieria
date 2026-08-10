@@ -315,28 +315,38 @@ const GlobalStyles = () => (
       /* Eliminada la sombra (box-shadow) para unificar el fondo */
     }
 
-    /* ---------- Orbit header ---------- */
+   /* ---------- Orbit header ---------- */
     .gal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px; flex-wrap: wrap; gap: 16px; }
-    .gal-logo { display: flex; align-items: center; gap: 14px; }
-
-    /* Contenedor blanco para contrastar el texto negro del logo */
+    
+    .gal-logo { display: flex; align-items: center; gap: 16px; }
+    
     .gal-logo-img-wrapper {
-      background: var(--paper-2); 
-      padding: 6px 14px;
-      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      /* Agregamos una sutil línea vertical divisoria */
+      padding-right: 16px;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
     }
+    
     .gal-logo-img {
-      height: 32px; 
+      height: 38px; /* Un poco más grande para que luzca el detalle */
       width: auto;
       display: block;
+      /* EL TRUCO CSS: 
+         1. Invert(1) pasa el texto negro a blanco (y la cara a azul)
+         2. Hue-rotate(180deg) devuelve la cara azul a su tono dorado
+         3. Brightness(1.1) le da un ligero brillo extra */
+      filter: invert(1) hue-rotate(180deg) brightness(1.1);
     }
-
-    .gal-logo-text { font-family: 'Fraunces', serif; font-size: 16px; color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
-
+    
+    .gal-logo-text { 
+      font-family: 'Fraunces', serif; 
+      font-size: 16px; 
+      color: rgba(255, 255, 255, 0.9); /* Texto en blanco suave */
+      font-weight: 500; 
+      letter-spacing: 0.02em; 
+    }
     .gal-orbit { display: flex; align-items: center; gap: 4px; position: relative; }
     .gal-orbit-track { position: relative; display: flex; align-items: center; gap: 26px; padding: 10px 6px; }
     .gal-orbit-line {
