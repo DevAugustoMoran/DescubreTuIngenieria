@@ -49,7 +49,7 @@ class handler(BaseHTTPRequestHandler):
                 
                 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
                 response = client.models.generate_content(
-                    model='gemini-2.0-flash',
+                    model='gemini-3.1-flash-lite',
                     contents=f"El estudiante completó la ruta para: {req_body.get('carrera_id')}. Nivel mates: {req_body.get('math')}, Nivel física: {req_body.get('physics')}. Tiempo: {req_body.get('hours')}h/sem.",
                     config=types.GenerateContentConfig(
                         system_instruction=PROMPT,
