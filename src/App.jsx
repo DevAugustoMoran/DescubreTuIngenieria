@@ -451,6 +451,48 @@ const GENERAL_QUESTIONS = [
   "¿Cómo es el proceso de admisión?",
 ];
 
+/* Nota: estos textos son ejemplos ilustrativos para el prototipo.
+   Antes de un lanzamiento real, reemplazar con datos verificados
+   (ej. estudios de empleabilidad propios, INE, cámaras del sector). */
+const JOB_INSIGHTS = {
+  sistemas: { headline: "Alta demanda de talento tech", note: "Empresas de software y servicios digitales contratan constantemente perfiles junior y semi-senior." },
+  mecatronica: { headline: "Automatización en expansión", note: "La manufactura regional invierte cada vez más en robótica y control automático." },
+  industrial: { headline: "Procesos que nunca dejan de mejorarse", note: "Toda empresa con operaciones necesita perfiles de mejora continua y logística." },
+  construccion: { headline: "Infraestructura en crecimiento", note: "Vivienda e infraestructura pública mantienen una demanda constante de diseño y supervisión." },
+  telecomunicaciones: { headline: "El mundo conectado no para", note: "La expansión de redes móviles y fibra mantiene la demanda de especialistas en conectividad." },
+  electronica: { headline: "El hardware detrás de todo", note: "Dispositivos IoT y sistemas embebidos son un campo en expansión constante." },
+  administrativa: { headline: "Liderazgo técnico muy buscado", note: "Perfiles que combinan gestión y tecnología suelen escalar rápido a roles de dirección." },
+  quimica: { headline: "De laboratorio a la industria", note: "Alimentos, farmacéutica y manufactura demandan ingenieros de procesos de forma constante." },
+  energeticos: { headline: "La transición energética ya empezó", note: "Las energías renovables están generando nuevas oportunidades en toda la región." },
+};
+
+const JOB_BULLETINS = CAREERS.map((c) => ({
+  id: c.id,
+  short: c.short,
+  icon: c.icon,
+  headline: JOB_INSIGHTS[c.id]?.headline || `Oportunidades en ${c.short}`,
+  note: JOB_INSIGHTS[c.id]?.note || c.blurb,
+}));
+
+const TICKER_ITEMS = CAREERS.flatMap((c) => ([
+  { type: "prof", icon: c.icon, title: c.professor.name, text: c.professor.shortLine.replace(/[""]/g, "") },
+  { type: "job", icon: c.icon, title: JOB_INSIGHTS[c.id]?.headline || c.short, text: JOB_INSIGHTS[c.id]?.note || c.blurb },
+]));
+
+/* Consultas usadas para pedir una foto representativa del sector a /api/images.
+   Nunca se usan para los profesores (son personas ficticias, no reciben foto). */
+const IMAGE_QUERIES = {
+  sistemas: "software developer coding screen",
+  mecatronica: "robotics engineering automation",
+  industrial: "factory production line workers",
+  construccion: "construction engineer blueprint site",
+  telecomunicaciones: "network server data center",
+  electronica: "electronics circuit board",
+  administrativa: "business team strategy meeting",
+  quimica: "chemical industry laboratory",
+  energeticos: "solar panels renewable energy",
+};
+
 /* ------------------------------------------------------------------ */
 /*  UTILIDADES                                                        */
 /* ------------------------------------------------------------------ */
@@ -788,8 +830,261 @@ const GlobalStyles = () => (
     .gal-done-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; color: var(--ink); }
     .gal-back-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
     .gal-footer-note { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 22px; }
+
+    /* ---------- Side rails (desktop only, motivational carousels) ---------- */
+    .gal-side-rail {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 304px;
+      z-index: 4;
+      display: none;
+    }
+    .gal-side-rail.left { left: calc(50% - 480px - 26px - 304px); }
+    .gal-side-rail.right { right: calc(50% - 480px - 26px - 304px); }
+    @media (min-width: 1620px) { .gal-side-rail { display: block; } }
+
+    .gal-rail-card {
+      background: var(--ink-2);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+    }
+    .gal-rail-card-head {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--gold-light); padding: 16px 18px 0;
+    }
+
+    .gal-rail-banner {
+      height: 128px;
+      position: relative;
+      overflow: hidden;
+      margin: 12px 18px 0;
+      border-radius: 14px;
+      display: flex; align-items: flex-end;
+    }
+    .gal-rail-banner.prof { background: radial-gradient(130% 130% at 25% 15%, rgba(232,201,120,0.28), transparent 62%), linear-gradient(155deg, var(--ink-3), var(--ink)); }
+    .gal-rail-banner.job { background: radial-gradient(130% 130% at 75% 15%, rgba(232,201,120,0.32), transparent 62%), linear-gradient(200deg, var(--ink-3), var(--ink-2)); }
+    .gal-rail-banner-icon-bg { position: absolute; right: -14px; top: -16px; opacity: 0.16; color: var(--gold-light); transform: rotate(-6deg); }
+    .gal-rail-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .gal-rail-avatar-overlap {
+      width: 54px; height: 54px; border-radius: 50%; background: var(--gold); color: var(--ink);
+      display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif;
+      font-weight: 600; font-size: 17px; border: 3px solid var(--ink-2);
+      margin: 0 0 -14px 16px; position: relative; z-index: 2; box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .gal-rail-job-icon-chip {
+      width: 44px; height: 44px; border-radius: 12px; background: rgba(11,21,38,0.55); color: var(--gold-light);
+      display: flex; align-items: center; justify-content: center; margin: 0 0 -14px 16px;
+      position: relative; z-index: 2; backdrop-filter: blur(2px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .gal-rail-card-inner { padding: 24px 18px 18px; }
+    .gal-rail-card-body {
+      min-height: 130px;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .gal-rail-card-body.fading { opacity: 0; transform: translateY(6px); }
+
+    .gal-rail-quote { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.85); font-style: italic; margin-bottom: 10px; }
+    .gal-rail-name { font-size: 12.5px; font-weight: 700; color: var(--white); }
+    .gal-rail-role { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+    .gal-rail-job-headline { font-size: 14.5px; font-weight: 700; color: var(--white); margin-bottom: 7px; line-height: 1.35; }
+    .gal-rail-job-note { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.55); }
+    .gal-rail-job-tag { display: inline-block; margin-top: 12px; font-size: 10.5px; font-weight: 700; color: var(--ink); background: var(--gold-light); padding: 4px 9px; border-radius: 999px; }
+
+    .gal-rail-dots-mini { display: flex; gap: 5px; padding: 0 18px 18px; }
+    .gal-rail-dots-mini span { width: 14px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.12); transition: all 0.3s ease; }
+    .gal-rail-dots-mini span.on { background: var(--gold-light); width: 22px; }
+
+    /* ---------- Mobile / tablet ticker ---------- */
+    .gal-mobile-ticker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--ink-2);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 11px 14px;
+      margin-bottom: 22px;
+    }
+    @media (min-width: 1500px) { .gal-mobile-ticker { display: none; } }
+    .gal-mobile-ticker-icon {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(232,201,120,0.12); color: var(--gold-light);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gal-mobile-ticker-inner { flex: 1; min-width: 0; animation: gal-rail-fade 0.4s ease; }
+    .gal-mobile-ticker-text { font-size: 12px; line-height: 1.4; color: rgba(255,255,255,0.7); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gal-mobile-ticker-text b { color: var(--white); font-weight: 700; }
+    .gal-mobile-ticker-dots { display: none; }
+    @media (min-width: 480px) {
+      .gal-mobile-ticker-text { white-space: normal; }
+    }
   `}</style>
 );
+
+/* ------------------------------------------------------------------ */
+/*  FOTOS DE SECTOR (solo para boletines de campo laboral)            */
+/* ------------------------------------------------------------------ */
+
+function useCareerPhotos() {
+  const [photos, setPhotos] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    CAREERS.forEach(async (c) => {
+      const query = IMAGE_QUERIES[c.id];
+      if (!query) return;
+      try {
+        const res = await fetch(`/api/images?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (!cancelled && data.url) {
+          setPhotos((prev) => ({ ...prev, [c.id]: data.url }));
+        }
+      } catch (e) {
+        // Silencioso: el banner ilustrado ya funciona como respaldo.
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  return photos;
+}
+
+/* ------------------------------------------------------------------ */
+/*  MOTIVATIONAL RAILS (desktop side carousels + mobile ticker)       */
+/* ------------------------------------------------------------------ */
+
+function ProfessorRail({ intervalMs = 6500, fadeMs = 450 }) {
+  const items = CAREERS;
+  const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % items.length);
+        setFading(false);
+      }, fadeMs);
+    }, intervalMs);
+    return () => clearInterval(cycle);
+  }, [items.length, intervalMs, fadeMs]);
+
+  const c = items[idx];
+  const Icon = c.icon;
+
+  return (
+    <div className="gal-side-rail left">
+      <div className="gal-rail-card">
+        <div className="gal-rail-card-head"><Quote size={13} /> Casos de éxito</div>
+
+        <div className="gal-rail-banner prof">
+          <Icon size={100} className="gal-rail-banner-icon-bg" />
+          {c.professor.photoUrl ? (
+            <img src={c.professor.photoUrl} alt={c.professor.name} className="gal-rail-banner-img" />
+          ) : null}
+          <div className="gal-rail-avatar-overlap" style={{ opacity: fading ? 0 : 1, transform: fading ? "translateY(4px)" : "translateY(0)" }}>
+            {c.professor.initials}
+          </div>
+        </div>
+
+        <div className="gal-rail-card-inner">
+          <div className={"gal-rail-card-body" + (fading ? " fading" : "")}>
+            <div className="gal-rail-quote">{c.professor.shortLine}</div>
+            <div className="gal-rail-name">{c.professor.name}</div>
+            <div className="gal-rail-role">{c.professor.role} · {c.short}</div>
+          </div>
+        </div>
+
+        <div className="gal-rail-dots-mini">
+          {items.map((_, i) => <span key={i} className={i === idx ? "on" : ""} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JobBulletinRail({ photos, intervalMs = 7200, fadeMs = 450 }) {
+  const items = JOB_BULLETINS;
+  const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % items.length);
+        setFading(false);
+      }, fadeMs);
+    }, intervalMs);
+    return () => clearInterval(cycle);
+  }, [items.length, intervalMs, fadeMs]);
+
+  const b = items[idx];
+  const Icon = b.icon;
+  const photoUrl = photos && photos[b.id];
+
+  return (
+    <div className="gal-side-rail right">
+      <div className="gal-rail-card">
+        <div className="gal-rail-card-head"><Sparkles size={13} /> Campo laboral</div>
+
+        <div className="gal-rail-banner job">
+          {!photoUrl && <Icon size={100} className="gal-rail-banner-icon-bg" />}
+          {photoUrl && (
+            <img src={photoUrl} alt={b.short} className="gal-rail-banner-img" style={{ opacity: fading ? 0.4 : 1, transition: "opacity 0.45s ease" }} />
+          )}
+          <div className="gal-rail-job-icon-chip" style={{ opacity: fading ? 0 : 1, transform: fading ? "translateY(4px)" : "translateY(0)" }}>
+            <Icon size={19} />
+          </div>
+        </div>
+
+        <div className="gal-rail-card-inner">
+          <div className={"gal-rail-card-body" + (fading ? " fading" : "")}>
+            <div className="gal-rail-job-headline">{b.headline}</div>
+            <div className="gal-rail-job-note">{b.note}</div>
+            <span className="gal-rail-job-tag">{b.short}</span>
+          </div>
+        </div>
+
+        <div className="gal-rail-dots-mini">
+          {items.map((_, i) => <span key={i} className={i === idx ? "on" : ""} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileTicker({ intervalMs = 5000 }) {
+  const items = TICKER_ITEMS;
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % items.length), intervalMs);
+    return () => clearInterval(t);
+  }, [items.length, intervalMs]);
+  const item = items[idx];
+  const Icon = item.icon;
+  return (
+    <div className="gal-mobile-ticker">
+      <div className="gal-mobile-ticker-icon"><Icon size={14} /></div>
+      <div className="gal-mobile-ticker-inner" key={idx}>
+        <span className="gal-mobile-ticker-text"><b>{item.title}</b> — {item.text}</span>
+      </div>
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  ORBIT HEADER                                                      */
@@ -1319,6 +1614,7 @@ export default function GalileoLeadMagnet() {
   const [phase, setPhase] = useState("challenge"); 
   const [career, setCareer] = useState(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
+  const careerPhotos = useCareerPhotos();
 
   const restart = () => {
     setStage(1);
@@ -1330,8 +1626,13 @@ export default function GalileoLeadMagnet() {
   return (
     <div className="gal-root">
       <GlobalStyles />
+
+      <ProfessorRail />
+      <JobBulletinRail photos={careerPhotos} />
+
       <div className="gal-shell">
         <OrbitHeader stage={stage} />
+        <MobileTicker />
 
         {stage === 1 && (
           <DiscoverStage
