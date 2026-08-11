@@ -1,14 +1,81 @@
 import os
 import json
+import smtplib
+from email.message import EmailMessage
 from http.server import BaseHTTPRequestHandler
 from supabase import create_client, Client
 from google import genai
 from google.genai import types
+from fpdf import FPDF
 
 # Conexión a Supabase
 url: str = os.environ.get("SUPABASE_URL", "")
 key: str = os.environ.get("SUPABASE_KEY", "")
 supabase: Client = create_client(url, key) if url and key else None
+
+
+# --- NUEVAS FUNCIONES: PDF Y CORREO ---
+
+def generar_pdf(nombre, carrera, horas):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Diseño estético (Azul oscuro institucional)
+    pdf.set_fill_color(15, 23, 42)
+    pdf.rect(0, 0, 210, 40, 'F')
+    
+    # Cabecera
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("helvetica", 'B', 20)
+    pdf.cell(0, 20, "UNIVERSIDAD GALILEO", border=0, ln=1, align='C')
+    pdf.set_font("helvetica", 'I', 12)
+    pdf.cell(0, 5, "Tu ruta hacia el éxito profesional", border=0, ln=1, align='C')
+    
+    # Título de la carrera
+    pdf.ln(15)
+    pdf.set_text_color(30, 41, 59)
+    pdf.set_font("helvetica", 'B', 16)
+    pdf.cell(0, 10, f"Plan Estratégico: {carrera}", border=0, ln=1, align='C')
+    
+    # Cuerpo del texto
+    pdf.ln(10)
+    pdf.set_font("helvetica", '', 12)
+    texto = f"Hola {nombre},\n\nCon base en tu perfil y tu disponibilidad de {horas} horas semanales, hemos estructurado los siguientes pasos para ti:\n\n1. Fundamentos: Refuerza tus bases en matemáticas y física.\n2. Inmersión: Comienza a explorar los conceptos base de {carrera}.\n3. Especialización: Únete a nuestros laboratorios prácticos.\n\nEl equipo de admisiones se pondrá en contacto contigo pronto."
+    
+    pdf.multi_cell(0, 8, texto)
+    
+    # En Vercel, los archivos temporales solo se pueden guardar en /tmp/
+    ruta = "/tmp/Plan_Galileo.pdf"
+    pdf.output(ruta)
+    return ruta
+
+def enviar_correo(destinatario, nombre, ruta_pdf, carrera):
+    remitente = os.environ.get("EMAIL_USER")
+    password = os.environ.get("EMAIL_PASS")
+    
+    if not remitente or not password:
+        print("Faltan credenciales de correo electrónico.")
+        return
+
+    msg = EmailMessage()
+    msg['Subject'] = f'Tu Plan de Estudio: {carrera} - Universidad Galileo'
+    msg['From'] = remitente
+    msg['To'] = destinatario
+    msg.set_content(f"Hola {nombre},\n\nGracias por completar el reto. Adjunto encontrarás tu plan de estudio estratégico en formato PDF.\n\n¡Te esperamos en clase!")
+
+    # Adjuntar el PDF
+    with open(ruta_pdf, 'rb') as f:
+        pdf_data = f.read()
+        
+    msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='Plan_Estudio_Galileo.pdf')
+
+    # Enviar por SMTP (Gmail)
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(remitente, password)
+        server.send_message(msg)
+
+# --- FIN NUEVAS FUNCIONES ---
+
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -59,15 +126,30 @@ class handler(BaseHTTPRequestHandler):
                 
                 ia_data = json.loads(response.text)
                 
+                # Datos del lead
+                nombre_lead = req_body.get("nombre")
+                correo_lead = req_body.get("correo")
+                carrera_lead = req_body.get("carrera_id")
+                horas_lead = req_body.get("hours", "algunas")
+
                 if supabase:
                     supabase.table("leads").insert({
-                        "nombre": req_body.get("nombre"),
-                        "correo": req_body.get("correo"),
-                        "carrera_interes": req_body.get("carrera_id"),
+                        "nombre": nombre_lead,
+                        "correo": correo_lead,
+                        "carrera_interes": carrera_lead,
                         "perfil_ia": ia_data.get("perfil"),
                         "resumen_ia": ia_data.get("justificacion")
                     }).execute()
-                    
+                
+                # --- NUEVO: EJECUCIÓN DE PDF Y CORREO ---
+                if correo_lead:
+                    try:
+                        ruta_pdf = generar_pdf(nombre_lead, carrera_lead, horas_lead)
+                        enviar_correo(correo_lead, nombre_lead, ruta_pdf, carrera_lead)
+                    except Exception as e:
+                        print(f"Fallo al enviar correo: {e}")
+                # ----------------------------------------
+                        
                 self._send_success({"status": "ok"})
 
         except Exception as e:
