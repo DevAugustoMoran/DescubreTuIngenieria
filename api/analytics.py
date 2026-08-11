@@ -6,8 +6,8 @@ from google import genai
 from google.genai import types
 
 # Conexión a Supabase
-url: str = os.environ.get("SUPABASE_URL", "")
-key: str = os.environ.get("SUPABASE_KEY", "")
+url: str = os.environ.get("SUPABASE_URL", "https://ehxuzdtewqfcbqrmujyn.supabase.co/rest/v1/")
+key: str = os.environ.get("SUPABASE_KEY", "sb_publishable_4_yZ1k4pNciW181n9doiuw_AiIXMcy6")
 supabase: Client = create_client(url, key) if url and key else None
 
 class handler(BaseHTTPRequestHandler):
