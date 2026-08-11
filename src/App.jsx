@@ -455,7 +455,6 @@ const GENERAL_QUESTIONS = [
 /*  UTILIDADES                                                        */
 /* ------------------------------------------------------------------ */
 
-// Pega esto aquí:
 const formatBoldText = (text) => {
   if (!text) return "";
   const parts = text.split(/(\*\*.*?\*\*)/g);
@@ -465,6 +464,16 @@ const formatBoldText = (text) => {
     }
     return part;
   });
+};
+
+const trackEvent = async (eventName, careerId = null) => {
+  try {
+    await fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "track_event", evento: eventName, carrera_id: careerId })
+    });
+  } catch (e) {} 
 };
 
 /* ------------------------------------------------------------------ */
@@ -1022,7 +1031,7 @@ function DiscoverStage({ onPick, onSkipToChat }) {
                   <p className="gal-discover-blurb">{c.blurb}</p>
                   
                   <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                    <button className="gal-btn on-dark" onClick={() => onPick(c)}>
+                    <button className="gal-btn on-dark" onClick={() => { trackEvent("inicio_reto", c.id); onPick(c); }}>
                       Hacer el reto corto <ArrowRight size={16} />
                     </button>
                     <button 
@@ -1116,6 +1125,12 @@ function Challenge({ career, onFinish }) {
 
 function ChallengeResult({ career, score, total, onGoToChat }) {
   const pct = Math.round((score / total) * 100);
+  
+  // NUEVO: Registramos que el usuario terminó el reto en cuanto esta pantalla se carga
+  useEffect(() => { 
+    trackEvent("completo_reto", career.id); 
+  }, [career.id]);
+
   return (
     <div className="gal-panel">
       <div className="gal-eyebrow"><CheckCircle2 size={13} /> Resultado</div>
@@ -1220,11 +1235,18 @@ function CalculatorStage({ career, onRestart }) {
 
   const level = (v) => (v <= 3 ? "básico" : v <= 7 ? "intermedio" : "avanzado");
 
-  const handleSubmit = () => {
-    if (!name.trim() || !email.trim()) return;
-    // Aquí iría el guardado real. Por ahora simulamos éxito inmediato.
-    setSent(true);
-  };
+  const handleSubmit = async () => {
+  if (!name.trim() || !email.trim()) return;
+  setSent(true); // Éxito inmediato visual
+  
+  await fetch("/api/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "save_lead", nombre: name, correo: email, carrera_id: career.id, math, physics, hours
+    })
+  });
+};
 
   if (sent) {
     return (
