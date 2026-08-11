@@ -16,7 +16,7 @@ import {
   Quote,
   Compass,
   Sparkles,
-  Network, Cpu, Briefcase, FlaskConical, Zap
+  Network, Cpu, Briefcase, FlaskConical, Zap, GraduationCap
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -71,6 +71,8 @@ const CAREERS = [
       name: "Ing. Andrea Solís",
       role: "Coordinadora del área de Ingeniería en Sistemas",
       initials: "AS",
+      degree: "Maestría en Ingeniería de Software",
+      experience: "13 años de experiencia en desarrollo y liderazgo técnico",
       highlight: "Ex líder técnica en banca digital.",
       shortLine: "“Cada estudiante que duda en su primer código termina liderando proyectos reales.”",
       quote: "Lo que más me emociona es ver a alguien que llegó pensando que 'no nació para programar' crear su primera app funcional a mitad de semestre.",
@@ -123,6 +125,8 @@ const CAREERS = [
       name: "Ing. Fernando Casasola",
       role: "Catedrático de Robótica y Control",
       initials: "FC",
+      degree: "Maestría en Robótica y Automatización",
+      experience: "10 años dirigiendo proyectos de robótica aplicada",
       highlight: "Director de proyectos de robótica estudiantil.",
       shortLine: "“Aquí no memorizas fórmulas, las ves moverse.”",
       quote: "La primera vez que un estudiante hace que su propio circuito cobre vida, ya no hay vuelta atrás.",
@@ -175,6 +179,8 @@ const CAREERS = [
       name: "Inga. Paola Recinos",
       role: "Catedrática de Investigación de Operaciones",
       initials: "PR",
+      degree: "Maestría en Investigación de Operaciones",
+      experience: "11 años como consultora de mejora de procesos",
       highlight: "Consultora de mejora de procesos manufactureros.",
       shortLine: "“Les enseño a ver problemas donde otros solo ven rutina.”",
       quote: "Ese cambio de mentalidad —cuestionar el proceso, no solo ejecutarlo— es lo que te vuelve indispensable en cualquier empresa.",
@@ -227,6 +233,8 @@ const CAREERS = [
       name: "Ing. Diego Ramírez",
       role: "Catedrático de Estructuras",
       initials: "DR",
+      degree: "Maestría en Ingeniería Estructural",
+      experience: "14 años supervisando proyectos de infraestructura",
       highlight: "Supervisor de megaproyectos de infraestructura pública.",
       shortLine: "“Lo que dibujan en el papel, alguien lo va a caminar.”",
       quote: "Cada semestre les recuerdo lo mismo: esa responsabilidad —que algo real dependa de tu cálculo— hace especial esta carrera.",
@@ -268,6 +276,8 @@ const CAREERS = [
       name: "Ing. Carlos Mendoza",
       role: "Catedrático de Infraestructura",
       initials: "CM",
+      degree: "Maestría en Redes y Telecomunicaciones",
+      experience: "12 años en consultoría de infraestructura de red",
       highlight: "Consultor en redes corporativas.",
       shortLine: "“Sin redes, la tecnología moderna simplemente no existe.”",
       quote: "Conectar puntos aislados y permitir que se comuniquen al instante es un reto fascinante.",
@@ -309,6 +319,8 @@ const CAREERS = [
       name: "Inga. Lucía Barrios",
       role: "Catedrática de Sistemas Integrados",
       initials: "LB",
+      degree: "Maestría en Sistemas Embebidos",
+      experience: "9 años diseñando hardware IoT",
       highlight: "Diseñadora de hardware IoT.",
       shortLine: "“Todo el software del mundo necesita hardware donde ejecutarse.”",
       quote: "Entender a nivel eléctrico cómo se procesa la información cambia tu forma de ver cualquier dispositivo.",
@@ -350,6 +362,8 @@ const CAREERS = [
       name: "Ing. Roberto Valdez",
       role: "Catedrático de Estrategia",
       initials: "RV",
+      degree: "MBA con especialización en Operaciones",
+      experience: "16 años liderando operaciones en retail multinacional",
       highlight: "Director de operaciones en retail multinacional.",
       shortLine: "“Traducimos la complejidad técnica en valor para el negocio.”",
       quote: "Las mejores empresas son lideradas por quienes entienden tanto los números financieros como la base tecnológica.",
@@ -391,6 +405,8 @@ const CAREERS = [
       name: "Inga. Sofía Montenegro",
       role: "Catedrática de Procesos Industriales",
       initials: "SM",
+      degree: "Doctorado en Ingeniería Química",
+      experience: "10 años investigando en biopolímeros",
       highlight: "Investigadora en biopolímeros.",
       shortLine: "“No somos químicos de laboratorio; somos diseñadores de industrias.”",
       quote: "La magia ocurre cuando descubres que puedes diseñar una planta entera basándote en unas cuantas ecuaciones de balance de masa.",
@@ -432,6 +448,8 @@ const CAREERS = [
       name: "Ing. Martín Fuentes",
       role: "Catedrático de Energías Renovables",
       initials: "MF",
+      degree: "Maestría en Energías Renovables",
+      experience: "12 años en consultoría de proyectos eólicos y solares",
       highlight: "Consultor en proyectos eólicos y solares.",
       shortLine: "“La transición energética es el reto más grande de nuestra generación.”",
       quote: "Diseñar sistemas que alimenten ciudades sin destruir el planeta es el trabajo con más propósito que puedes tener.",
@@ -886,7 +904,7 @@ const GlobalStyles = () => (
 
     .gal-rail-card-inner { padding: 24px 18px 18px; }
     .gal-rail-card-body {
-      min-height: 130px;
+      min-height: 148px;
       transition: opacity 0.45s ease, transform 0.45s ease;
       opacity: 1;
       transform: translateY(0);
@@ -894,8 +912,14 @@ const GlobalStyles = () => (
     .gal-rail-card-body.fading { opacity: 0; transform: translateY(6px); }
 
     .gal-rail-quote { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.85); font-style: italic; margin-bottom: 10px; }
-    .gal-rail-name { font-size: 12.5px; font-weight: 700; color: var(--white); }
-    .gal-rail-role { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .gal-rail-name { font-size: 13.5px; font-weight: 700; color: var(--white); }
+    .gal-rail-role { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; margin-bottom: 14px; }
+    .gal-rail-cred-row {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; line-height: 1.4; color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+    .gal-rail-cred-row svg { color: var(--gold-light); flex-shrink: 0; }
 
     .gal-rail-job-headline { font-size: 14.5px; font-weight: 700; color: var(--white); margin-bottom: 7px; line-height: 1.35; }
     .gal-rail-job-note { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.55); }
@@ -922,7 +946,12 @@ const GlobalStyles = () => (
       background: rgba(232,201,120,0.12); color: var(--gold-light);
       display: flex; align-items: center; justify-content: center;
     }
-    .gal-mobile-ticker-inner { flex: 1; min-width: 0; animation: gal-rail-fade 0.4s ease; }
+    .gal-mobile-ticker-inner {
+      flex: 1; min-width: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 1; transform: translateY(0);
+    }
+    .gal-mobile-ticker-inner.fading { opacity: 0; transform: translateY(4px); }
     .gal-mobile-ticker-text { font-size: 12px; line-height: 1.4; color: rgba(255,255,255,0.7); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .gal-mobile-ticker-text b { color: var(--white); font-weight: 700; }
     .gal-mobile-ticker-dots { display: none; }
@@ -1002,9 +1031,13 @@ function ProfessorRail({ intervalMs = 6500, fadeMs = 450 }) {
 
         <div className="gal-rail-card-inner">
           <div className={"gal-rail-card-body" + (fading ? " fading" : "")}>
-            <div className="gal-rail-quote">{c.professor.shortLine}</div>
             <div className="gal-rail-name">{c.professor.name}</div>
             <div className="gal-rail-role">{c.professor.role} · {c.short}</div>
+
+            <div className="gal-rail-cred-row"><GraduationCap size={13} /> {c.professor.degree}</div>
+            <div className="gal-rail-cred-row"><Briefcase size={13} /> {c.professor.experience}</div>
+
+            <span className="gal-rail-job-tag">{c.professor.highlight}</span>
           </div>
         </div>
 
@@ -1067,19 +1100,31 @@ function JobBulletinRail({ photos, intervalMs = 7200, fadeMs = 450 }) {
   );
 }
 
-function MobileTicker({ intervalMs = 5000 }) {
+function MobileTicker({ intervalMs = 5000, fadeMs = 400 }) {
   const items = TICKER_ITEMS;
   const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % items.length), intervalMs);
-    return () => clearInterval(t);
-  }, [items.length, intervalMs]);
+    const cycle = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % items.length);
+        setFading(false);
+      }, fadeMs);
+    }, intervalMs);
+    return () => clearInterval(cycle);
+  }, [items.length, intervalMs, fadeMs]);
+
   const item = items[idx];
   const Icon = item.icon;
+
   return (
     <div className="gal-mobile-ticker">
-      <div className="gal-mobile-ticker-icon"><Icon size={14} /></div>
-      <div className="gal-mobile-ticker-inner" key={idx}>
+      <div className="gal-mobile-ticker-icon" style={{ opacity: fading ? 0.3 : 1, transition: `opacity ${fadeMs}ms ease` }}>
+        <Icon size={14} />
+      </div>
+      <div className={"gal-mobile-ticker-inner" + (fading ? " fading" : "")}>
         <span className="gal-mobile-ticker-text"><b>{item.title}</b> — {item.text}</span>
       </div>
     </div>
