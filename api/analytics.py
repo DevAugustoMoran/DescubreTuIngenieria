@@ -103,54 +103,66 @@ class handler(BaseHTTPRequestHandler):
 
             # 2. EVALUAR Y GUARDAR LEAD
             elif action == "save_lead":
-                # Prompt para parametrizar la intención
+                chat_history = req_body.get("chat_history")
+                carrera_lead = req_body.get("carrera_id")
+                correo_lead = req_body.get("correo")
+                nombre_lead = req_body.get("nombre", "Estudiante")
+                horas_lead = req_body.get("hours", "algunas")
+
+            if chat_history:
+                # IA evalúa TODO el contexto de la conversación
+                PROMPT = """
+                Analiza la siguiente conversación entre un estudiante y un orientador vocacional.
+                Clasifica al estudiante ESTRICTAMENTE en UNO de estos 3 perfiles:
+                - "Usuario dudoso": Hace preguntas muy generales, sigue indeciso, no sabe qué elegir.
+                - "Usuario captado": Muestra interés estándar, dio su correo de forma natural.
+                - "Usuario decidido": Pregunta por inscripciones, fechas, precios o afirma estar seguro.
+                
+                Responde ÚNICAMENTE en JSON: {"perfil": "Usuario...", "justificacion": "Breve razón del análisis"}
+                """
+                contenido_ia = f"Carrera: {carrera_lead}\n\nHistorial de chat:\n{chat_history}"
+            else:
+                # IA evalúa datos sueltos (como funcionaba antes por si lo envían por formulario)
                 PROMPT = """
                 Analiza al estudiante según la carrera que eligió.
                 Clasifícalo en UNO de estos perfiles estrictamente:
-                - "Usuario dudoso": No sabe qué elegir, indeciso.
-                - "Usuario captado": Interés en el plan de estudios y la carrera.
-                - "Usuario decidido": Pregunta por inscripción, pagos o fechas.
-                
+                - "Usuario dudoso", "Usuario captado", o "Usuario decidido".
                 Responde ÚNICAMENTE en JSON: {"perfil": "Usuario captado", "justificacion": "Breve razón"}
                 """
-                
-                client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-                response = client.models.generate_content(
-                    model='gemini-3.1-flash-lite',
-                    contents=f"El estudiante completó la ruta para: {req_body.get('carrera_id')}. Nivel mates: {req_body.get('math')}, Nivel física: {req_body.get('physics')}. Tiempo: {req_body.get('hours')}h/sem.",
-                    config=types.GenerateContentConfig(
-                        system_instruction=PROMPT,
-                        response_mime_type="application/json",
-                    )
-                )
-                
-                ia_data = json.loads(response.text)
-                
-                # Datos del lead
-                nombre_lead = req_body.get("nombre")
-                correo_lead = req_body.get("correo")
-                carrera_lead = req_body.get("carrera_id")
-                horas_lead = req_body.get("hours", "algunas")
+                contenido_ia = f"Carrera: {carrera_lead}. Nivel mates: {req_body.get('math')}, Física: {req_body.get('physics')}. Tiempo: {horas_lead}h/sem."
 
-                if supabase:
-                    supabase.table("leads").insert({
-                        "nombre": nombre_lead,
-                        "correo": correo_lead,
-                        "carrera_interes": carrera_lead,
-                        "perfil_ia": ia_data.get("perfil"),
-                        "resumen_ia": ia_data.get("justificacion")
-                    }).execute()
-                
-                # --- NUEVO: EJECUCIÓN DE PDF Y CORREO ---
-                if correo_lead:
-                    try:
-                        ruta_pdf = generar_pdf(nombre_lead, carrera_lead, horas_lead)
-                        enviar_correo(correo_lead, nombre_lead, ruta_pdf, carrera_lead)
-                    except Exception as e:
-                        print(f"Fallo al enviar correo: {e}")
-                # ----------------------------------------
-                        
-                self._send_success({"status": "ok"})
+            # Llamada a Gemini
+            client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+            response = client.models.generate_content(
+                model='gemini-3.1-flash-lite',
+                contents=contenido_ia,
+                config=types.GenerateContentConfig(
+                    system_instruction=PROMPT,
+                    response_mime_type="application/json",
+                )
+            )
+            
+            ia_data = json.loads(response.text)
+            
+            # Guardar en base de datos
+            if supabase:
+                supabase.table("leads").insert({
+                    "nombre": nombre_lead,
+                    "correo": correo_lead,
+                    "carrera_interes": carrera_lead,
+                    "perfil_ia": ia_data.get("perfil"),
+                    "resumen_ia": ia_data.get("justificacion")
+                }).execute()
+            
+            # EJECUCIÓN DE PDF Y CORREO
+            if correo_lead:
+                try:
+                    ruta_pdf = generar_pdf(nombre_lead, carrera_lead, horas_lead)
+                    enviar_correo(correo_lead, nombre_lead, ruta_pdf, carrera_lead)
+                except Exception as e:
+                    print(f"Fallo al enviar correo SMTP: {e}")
+                    
+            self._send_success({"status": "ok"})
 
         except Exception as e:
             self.send_response(500)

@@ -1,14 +1,79 @@
 import json
 import os
+import smtplib
+from email.message import EmailMessage
 from http.server import BaseHTTPRequestHandler
 from google import genai
 from google.genai import types
+from supabase import create_client, Client
+from fpdf import FPDF
 
-import os
-# (Tus otras importaciones...)
+# Conexión a Supabase
+url: str = os.environ.get("SUPABASE_URL", "")
+key: str = os.environ.get("SUPABASE_KEY", "")
+supabase: Client = create_client(url, key) if url and key else None
+
+# --- FUNCIONES DE PDF Y CORREO ---
+
+def generar_pdf(nombre, carrera, horas="algunas"):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Diseño estético (Azul oscuro institucional)
+    pdf.set_fill_color(15, 23, 42)
+    pdf.rect(0, 0, 210, 40, 'F')
+    
+    # Cabecera
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("helvetica", 'B', 20)
+    pdf.cell(0, 20, "UNIVERSIDAD GALILEO", border=0, ln=1, align='C')
+    pdf.set_font("helvetica", 'I', 12)
+    pdf.cell(0, 5, "Tu ruta hacia el éxito profesional", border=0, ln=1, align='C')
+    
+    # Título de la carrera
+    pdf.ln(15)
+    pdf.set_text_color(30, 41, 59)
+    pdf.set_font("helvetica", 'B', 16)
+    pdf.cell(0, 10, f"Plan Estratégico: {carrera}", border=0, ln=1, align='C')
+    
+    # Cuerpo del texto
+    pdf.ln(10)
+    pdf.set_font("helvetica", '', 12)
+    texto = f"Hola {nombre},\n\nCon base en tu perfil y tu interés en {carrera}, hemos estructurado los siguientes pasos para ti:\n\n1. Fundamentos: Refuerza tus bases en matemáticas y física.\n2. Inmersión: Comienza a explorar los conceptos base de la carrera.\n3. Especialización: Únete a nuestros laboratorios prácticos.\n\nEl equipo de admisiones se pondrá en contacto contigo pronto."
+    
+    pdf.multi_cell(0, 8, texto)
+    
+    # En Vercel, los archivos temporales solo se pueden guardar en /tmp/
+    ruta = "/tmp/Plan_Galileo.pdf"
+    pdf.output(ruta)
+    return ruta
+
+def enviar_correo(destinatario, nombre, ruta_pdf, carrera):
+    remitente = os.environ.get("EMAIL_USER")
+    password = os.environ.get("EMAIL_PASS")
+    
+    if not remitente or not password:
+        print("Faltan credenciales de correo electrónico.")
+        return
+
+    msg = EmailMessage()
+    msg['Subject'] = f'Tu Plan de Estudio: {carrera} - Universidad Galileo'
+    msg['From'] = remitente
+    msg['To'] = destinatario
+    msg.set_content(f"Hola {nombre},\n\nGracias por conversar con nosotros. Adjunto encontrarás tu plan de estudio estratégico en formato PDF.\n\n¡Te esperamos en clase!")
+
+    with open(ruta_pdf, 'rb') as f:
+        pdf_data = f.read()
+        
+    msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='Plan_Estudio_Galileo.pdf')
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(remitente, password)
+        server.send_message(msg)
+
+# ---------------------------------
 
 # 1. Leer el archivo de texto con la información de los PDFs
-# Asegúrate de que la ruta coincida con donde guardaste el archivo txt
 ruta_txt = os.path.join(os.path.dirname(__file__), 'conocimiento_universidad.txt')
 
 info_universidad = ""
@@ -31,6 +96,7 @@ REGLAS DE COMPORTAMIENTO:
 5. Si hacen preguntas sobre otra universidad, di que no tienes información al respecto, pero que con gusto puedes orientar las mejores opciones en esta universidad.
 6. Saluda solo la primera vez que escriben. Si el flujo de conversación continúa, trata de que el usuario no se abruma.
 7. No abuses de los signos para señalar términos.
+8. Si el estudiante muestra interés genuino en la carrera o solicita más información detallada, pídele amablemente su correo electrónico para enviarle su plan de estudios personalizado en PDF. No se lo pidas en el primer mensaje, evalúa la conversación primero.
 
 --------------------------------------------------
 BASE DE CONOCIMIENTO: UNIVERSIDAD GALILEO (EXTRAÍDA DE DOCUMENTOS OFICIALES)
@@ -88,14 +154,10 @@ BASE DE CONOCIMIENTO: INGENIERÍAS DISPONIBLES
 - Enfoque: Energías renovables y gestión de recursos energéticos.
 - Duración: 9 semestres aprox.
 - Salidas: Gestión de proyectos renovables, eficiencia energética.
-
---------------------------------------------------
-BASE DE CONOCIMIENTO: UNIVERSIDAD GALILEO
 --------------------------------------------------
 """
 
 class handler(BaseHTTPRequestHandler):
-    # Configuración CORS: Permite que tu frontend en React se comunique con esta API
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -103,55 +165,103 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
-# Maneja la petición real del chat
     def do_POST(self):
         try:
-            # 1. Leer los datos enviados por React
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)
             req_body = json.loads(post_data)
             
             mensajes_frontend = req_body.get("messages", [])
+            carrera_id = req_body.get("carrera_id", "Ingeniería en Sistemas") # Carrera por defecto si no se especifica
             
-            # --- AQUÍ ESTÁ LA MAGIA PARA LA MEMORIA ---
+            # Formatear el historial para Gemini
             gemini_history = []
+            texto_completo_chat = ""
+            ultimo_mensaje_usuario = ""
+
             for msg in mensajes_frontend:
-                # React nos envía "user" o "bot". Gemini necesita "user" o "model"
                 role = "user" if msg.get("role") == "user" else "model"
-                
-                # Extraemos el texto que viene en la propiedad "content"
                 texto = msg.get("content", "")
                 
-                if texto.strip(): # Solo lo agregamos si tiene texto
+                if role == "user":
+                    ultimo_mensaje_usuario = texto
+                
+                if texto.strip():
                     gemini_history.append({
                         "role": role,
                         "parts": [{"text": texto}]
                     })
+                    texto_completo_chat += f"{role.upper()}: {texto}\n"
             
-            # 2. Inicializar el NUEVO cliente de Gemini (toma la API key del entorno)
             client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
             
-            # 3. Llamar al modelo pasándole el HISTORIAL COMPLETO
+            # 1. Obtener la respuesta normal del chatbot conversacional
             response = client.models.generate_content(
-                model='gemini-3.1-flash-lite', # Asegúrate de usar un modelo que exista
-                contents=gemini_history,  # <--- Pasamos toda la lista, no solo el último
+                model='gemini-3.1-flash-lite',
+                contents=gemini_history,
                 config=types.GenerateContentConfig(
                     system_instruction=MEGA_PROMPT,
                 )
             )
             
-            # 4. Enviar la respuesta de vuelta a React en formato JSON
-            # (Mantén el resto de tu código igual a partir de aquí...)
+            respuesta_chatbot = response.text
+
+            # 2. DETECTOR INTELIGENTE DE CORREOS EN EL ÚLTIMO MENSAJE
+            import re
+            email_regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+            match_correo = re.search(email_regex, ultimo_mensaje_usuario)
+
+            if match_correo and supabase:
+                correo_detectado = match_correo.group(0)
+
+                # 3. LLAMADA SECUNDARIA A GEMINI PARA PERFILAR LA CONVERSACIÓN
+                PROMPT_PERFIL = """
+                Analiza la siguiente conversación entre un estudiante y un orientador vocacional.
+                Clasifica al estudiante ESTRICTAMENTE en UNO de estos 3 perfiles:
+                - "Usuario dudoso": Hace preguntas muy generales, sigue indeciso, no sabe qué elegir.
+                - "Usuario captado": Muestra interés estándar, dio su correo de forma natural tras recibir información.
+                - "Usuario decidido": Pregunta por inscripciones, fechas, precios o afirma estar seguro de estudiar.
+                
+                Responde ÚNICAMENTE en JSON: {"perfil": "Usuario...", "justificacion": "Breve razón del análisis"}
+                """
+                
+                response_perfil = client.models.generate_content(
+                    model='gemini-3.1-flash-lite',
+                    contents=f"Historial del chat:\n{texto_completo_chat}",
+                    config=types.GenerateContentConfig(
+                        system_instruction=PROMPT_PERFIL,
+                        response_mime_type="application/json",
+                    )
+                )
+                
+                ia_data = json.loads(response_perfil.text)
+
+                # 4. GUARDAR EN SUPABASE
+                supabase.table("leads").insert({
+                    "nombre": "Estudiante vía Chat",
+                    "correo": correo_detectado,
+                    "carrera_interes": carrera_id,
+                    "perfil_ia": ia_data.get("perfil"),
+                    "resumen_ia": ia_data.get("justificacion")
+                }).execute()
+
+                # 5. GENERAR PDF Y ENVIAR CORREO AUTOMÁTICO
+                try:
+                    ruta_pdf = generar_pdf("Estudiante", carrera_id)
+                    enviar_correo(correo_detectado, "Estudiante", ruta_pdf, carrera_id)
+                except Exception as mail_err:
+                    print(f"Error enviando correo automático desde el chat: {mail_err}")
+
+            # 6. Devolver la respuesta del chat al frontend
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             
-            respuesta_json = json.dumps({"respuesta": response.text})
+            respuesta_json = json.dumps({"respuesta": respuesta_chatbot})
             self.wfile.write(respuesta_json.encode('utf-8'))
             
         except Exception as e:
-            # Manejo de errores para que la API no se caiga silenciosamente
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
